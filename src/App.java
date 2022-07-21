@@ -1,42 +1,36 @@
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
-import java.util.Map;
 
 public class App {
 
     public static void main(String[] args) throws Exception {
 
-        // fazer uma conexão HTTP e buscar os top 250 filmes
+        /*API Top 250 Movies = Top250Movies
+         * API Most Popular Movies = MostPopularMovies
+         * API Nasa = APOD
+          */
+        String url = APIs.APOD;
+        ExtratorDeConteudoNASA extrator = new ExtratorDeConteudoNASA();
+        //ExtratorDeConteudoIMDB extrator = new ExtratorDeConteudoIMDB();
+        var http = new HttpCalls();
+        String json = http.buscaDados(url);
 
-        URI endereco = URI.create(APIs.Top250Movies);
-        var client = HttpClient.newHttpClient();
-        var request = HttpRequest.newBuilder(endereco).GET().build();
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        String body = response.body();
-
-        // extrair só os dados que interessam (titulo, poster, classificação)
-        var parser = new JsonParser();
-        List<Map<String, String>> listaDeFilmes = parser.parse(body);
-        
         // exibir e manipular os dados
+
+        List<Conteudo> conteudos = extrator.extraiConteudos(json);
+
         var stickers = new StickerMachine();
-        for (Map<String, String> filme : listaDeFilmes) {
+        for (int i = 0; i < 3; i++) {
 
-            String urlImagem = filme.get("image");
-            String titulo = filme.get("title");
+            Conteudo conteudo = conteudos.get(i);
 
-            InputStream inputStream = new URL(urlImagem).openStream();
-            String nomeArquivo = titulo + ".png";
+            InputStream inputStream = new URL(conteudo.getUrlImagem()).openStream();
+            String nomeArquivo = "resources/images/" + conteudo.getTitulo() + ".png";
 
             stickers.cria(inputStream, nomeArquivo);
             //
-            System.out.println(titulo);
+            System.out.println(conteudo.getTitulo());
             System.out.println();
 
         }

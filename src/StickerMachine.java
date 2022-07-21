@@ -49,7 +49,7 @@ public class StickerMachine {
 
         // escrever uma frase na nova imagem
 
-        graphics.drawString("Filme Brabo!!", 150, novaAltura - 100);
+        graphics.drawString("BRABO!!", 0, novaAltura - 100);
 
         // escrever a nova imagem em um arquivo
         ImageIO.write(novaImagem, "png", new File(nomeArquivo));
